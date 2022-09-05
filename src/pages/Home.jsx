@@ -1,45 +1,57 @@
-import React, { useState } from 'react'
-import MainPageLayout from '../components/MainPageLayout'
-
-
-const END_POINT = 'https://api.tvmaze.com/search/shows?q='
+import React, { useState } from 'react';
+import MainPageLayout from '../components/MainPageLayout';
+import { getApi } from '../misc/config';
 
 const Home = () => {
+  const [search, setSearch] = useState('');
+  const [results, setResults] = useState(null);
 
-  const [search, setSearch] = useState('')
+  const handleSearch = () => {
+    getApi(`/search/shows?q=/${search}`).then(data=>setResults(data)).catch(err=>console.error(err));
+  };
 
+  const onInputSearch = eve => {
+    setSearch(eve.target.value);
+  };
 
-  const handleSearch = ()=>{
-    fetch(`${END_POINT}${search}`)
-    .then(res => res.json())
-    .then(data=>{
-      console.log(data);
-    })
-    .catch(err=>console.error(err))
-  }
+  const onEnter = eve => {
+    if (eve.keyCode === 13) handleSearch();
+  };
 
-  const onInputSearch = (eve)=>{
-    setSearch(eve.target.value)
-  }
+  const renderResult = () => {
+    if (results && results.length > 0) {
+      return (
+        <div>
+          {results?.map(item => (
+            <div key={item.show.id}> {item.show.name} </div>
+          ))}
+        </div>
+      );
+    }
 
-  const onEnter = (eve)=>{
-    if (eve.keyCode === 13)
-      handleSearch();
-  }
+    if(results && results.length === 0){
+      return <h3>No result found</h3>
+    }
+    return null;
 
- 
+  };
 
   return (
     <MainPageLayout>
-      <input 
-      type="search" 
-      value={search}
-      onChange = {(eve) => onInputSearch(eve)}
-      onKeyDown = { (eve) => onEnter(eve) }
+      <input
+        type="search"
+        value={search}
+        onChange={eve => onInputSearch(eve)}
+        onKeyDown={eve => onEnter(eve)}
       />
-      <button type='button' onClick={handleSearch}> Search </button>
-    </MainPageLayout>
-  )
-}
+      <button type="button" onClick={handleSearch}>
+        {' '}
+        Search{' '}
+      </button>
 
-export default Home
+      { renderResult() }
+    </MainPageLayout>
+  );
+};
+
+export default Home;
