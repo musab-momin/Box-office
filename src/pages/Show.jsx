@@ -1,49 +1,63 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useReducer } from 'react';
+import { useParams } from 'react-router-dom';
 import { getApi } from '../misc/config';
 
+const INITIAL_STATE = {
+  show: null,
+  loading: true,
+  errors: null,
+};
+
+const reducer = (prevState, action) => {
+  if (action.type === 'Fetch_Success') {
+    return { ...prevState, loading: false, show: action.show };
+  }
+
+  if (action.type === 'Fetch_Failed') {
+    return { ...prevState, loading: false, errors: action.err };
+  }
+
+  return prevState;
+};
+
 const Show = () => {
-    
-    const { id } = useParams();
-    const [show, setShow] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [errors, setErrors] = useState(false);
+  const { id } = useParams();
 
-    useEffect(()=>{
-        
-        let isMounting = true
-        
-        setLoading(true)
-        getApi(`shows/${id}?embed=cast`)
-        .then(data => {
-            if(isMounting){
-                setLoading(false)
-                setShow(data)
-            }
-        })
-        .catch(err=>{
-            if(isMounting){
-                setLoading(false)
-                setErrors(err)
-            }
-        })
+  const [{ show, loading, errors }, dispatch] = useReducer(
+    reducer,
+    INITIAL_STATE
+  );
 
-        return () => {
-            isMounting = false
+
+  useEffect(() => {
+    let isMounting = true;
+
+    getApi(`shows/${id}?embed=cast`)
+      .then(data => {
+        if (isMounting) {
+          dispatch({ type: 'Fetch_Success', show: data });
         }
-    }, []);
+      })
+      .catch(err => {
+        if (isMounting) {
+          dispatch({ type: 'Fetch_Failed', err: err.message });
+        }
+      });
 
-    if(loading){
-        return( <div>Loading...</div> )
-    }
+    return () => {
+      isMounting = false;
+    };
+  }, []);
 
-    if(errors){
-        return( <div>Oops! An error accured</div>)
-    }
-  
-    return (
-    <div>Show</div>
-  )
-}
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-export default Show
+  if (errors) {
+    return <div>Oops! An error accured</div>;
+  }
+
+  return <div>Show</div>;
+};
+
+export default Show;
