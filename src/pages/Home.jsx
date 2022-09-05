@@ -5,9 +5,14 @@ import { getApi } from '../misc/config';
 const Home = () => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState(null);
+  const [searchType, setSearchType] = useState('shows');
+  const isShowSearch = searchType === 'shows';
 
   const handleSearch = () => {
-    getApi(`/search/shows?q=/${search}`).then(data=>setResults(data)).catch(err=>console.error(err));
+    const searchOption = searchType === 'shows' ? `/search/shows?q=/${search}` : `/search/people?q=/${search}`
+    getApi(searchOption)
+      .then(data => setResults(data))
+      .catch(err => console.error(err));
   };
 
   const onInputSearch = eve => {
@@ -18,22 +23,21 @@ const Home = () => {
     if (eve.keyCode === 13) handleSearch();
   };
 
+  const onTypeChange = eve => {
+    setSearchType(eve.target.value);
+  };
+
   const renderResult = () => {
     if (results && results.length > 0) {
-      return (
-        <div>
-          {results?.map(item => (
-            <div key={item.show.id}> {item.show.name} </div>
-          ))}
-        </div>
-      );
+      return results[0].show
+        ? results?.map(item => <div key={item.show.id}> {item.show.name} </div>)
+        : results?.map(item => (<div key={item.person.id}> {item.person.name} </div>));
     }
 
-    if(results && results.length === 0){
-      return <h3>No result found</h3>
+    if (results && results.length === 0) {
+      return <h3>No result found</h3>;
     }
     return null;
-
   };
 
   return (
@@ -45,11 +49,32 @@ const Home = () => {
         onKeyDown={eve => onEnter(eve)}
       />
       <button type="button" onClick={handleSearch}>
-        {' '}
-        Search{' '}
+        Search
       </button>
 
-      { renderResult() }
+      <div>
+        <label htmlFor="shows">
+          Shows
+          <input
+            type="radio"
+            id="shows"
+            value="shows"
+            onChange={onTypeChange}
+            checked={isShowSearch}
+          />
+        </label>
+        <label htmlFor="people">
+          People
+          <input
+            type="radio"
+            id="people"
+            onChange={onTypeChange}
+            value="people"
+            checked={!isShowSearch}
+          />
+        </label>
+      </div>
+      {renderResult()}
     </MainPageLayout>
   );
 };
