@@ -1,4 +1,4 @@
-{
+{ 
     "extends": ["eslint:recommended", "airbnb", "prettier"],
     "plugins": ["react-hooks"],
     "env": {
@@ -21,7 +21,8 @@
       "react/no-array-index-key": [0],
       "arrow-body-style": [0], 
       "prefer-arrow-callback": [0],
-      "react/function-component-definition":[0]
+      "react/function-component-definition":[0],
+      "no-underscore-dangle": "off"
     }
   }
   

@@ -1,5 +1,9 @@
 import React, { useEffect, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
+import Cast from '../components/shows/Cast';
+import Details from '../components/shows/Details';
+import Season from '../components/shows/Season';
+import ShowMainData from '../components/shows/ShowMainData';
 import { getApi } from '../misc/config';
 
 const INITIAL_STATE = {
@@ -31,8 +35,7 @@ const Show = () => {
 
   useEffect(() => {
     let isMounting = true;
-
-    getApi(`shows/${id}?embed=cast`)
+    getApi(`shows/${id}?embed[]=seasons&embed[]=cast`)
       .then(data => {
         if (isMounting) {
           dispatch({ type: 'Fetch_Success', show: data });
@@ -57,7 +60,37 @@ const Show = () => {
     return <div>Oops! An error accured</div>;
   }
 
-  return <div>Show</div>;
+  return(
+    <div>
+      <ShowMainData
+        image={show.image}
+        name={show.name}
+        rating={show.rating}
+        summary={show.summary}
+        tags={show.genres}
+      />
+
+      <div>
+        <h2>Details</h2>
+        <Details
+          status={show.status}
+          network={show.network}
+          premiered={show.premiered}
+        />
+      </div>
+
+      <div>
+        <h2>Seasons</h2>
+        <Season seasons={show._embedded.seasons}/> 
+      </div>
+
+      <div>
+        <h2>Cast</h2>
+        <Cast cast={show._embedded.cast} />
+      </div>
+    </div>
+
+  )
 };
 
 export default Show;
