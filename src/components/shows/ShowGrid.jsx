@@ -7,29 +7,26 @@ import { useShows } from '../../misc/custome-hook';
 const ShowGrid = ({ data }) => {
   const [state, dispatch] = useShows();
 
-  
-
   return (
     <FlexGrid>
       {data.map(item => {
-        const isSaved = state.includes(item.show.id)
-
+        const isSaved = state.includes(item.id)
         const toggleSaved = ()=>{
           if(isSaved){
-            dispatch({type: 'REMOVE', showId: item.show.id})
+            dispatch({type: 'REMOVE', showId: item.id})
           }
           else{
-            dispatch({type: 'ADD', showId: item.show.id})
+            dispatch({type: 'ADD', showId: item.id})
           }
         }
 
         return (
           <ShowCard
-            key={item.show.id}
-            id={item.show.id}
-            name={item.show.name}
-            summary={item.show.summary}
-            image={item.show.image ? item.show.image.medium : IMAGE_NOT_FOUND}
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            summary={item.summary}
+            image={item.image ? item.image.medium : IMAGE_NOT_FOUND}
             toggleShow = { toggleSaved }
             isSaved = { isSaved }
           />

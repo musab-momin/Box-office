@@ -6,15 +6,19 @@ import { getApi } from '../misc/config';
 
 const Home = () => {
   const [search, setSearch] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
   const [searchType, setSearchType] = useState('shows');
+  const [error, setError] = useState(null)
   const isShowSearch = searchType === 'shows';
 
   const handleSearch = () => {
     const searchOption = searchType === 'shows' ? `/search/shows?q=/${search}` : `/search/people?q=/${search}`
     getApi(searchOption)
-      .then(data => setResults(data))
-      .catch(err => console.error(err));
+      .then(data => {
+        const showData = data.map(item => item.show)
+        setResults(showData)
+      })
+      .catch(err => setError(err.message));
   };
 
   const onInputSearch = eve => {
@@ -30,12 +34,15 @@ const Home = () => {
   };
 
   const renderResult = () => {
-    if (results && results.length > 0) {
-      return results[0].show ? <ShowGrid data={results} /> : <PersonGrid data = {results}/>;
+    if (isShowSearch && results.length > 0) {
+      return <ShowGrid data={results} />;
+    }
+    if (!isShowSearch && results.length > 0){
+      return <PersonGrid data={results} />
     }
 
-    if (results && results.length === 0) {
-      return <h3>No result found</h3>;
+    if (results === null) {
+      return <h3>Search something</h3>;
     }
     return null;
   };
