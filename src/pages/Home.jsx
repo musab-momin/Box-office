@@ -57,6 +57,7 @@ const Home = () => {
     return null;
   };
 
+
   return (
     <MainPageLayout>
       <SearchInput
@@ -92,7 +93,7 @@ const Home = () => {
         </button>
       </SearchButtonWrapper>
 
-      {renderResult()}
+      {!error && renderResult()}
     </MainPageLayout>
   );
 };
