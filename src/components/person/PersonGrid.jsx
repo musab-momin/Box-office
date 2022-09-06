@@ -10,13 +10,13 @@ const PersonGrid = ({ data }) => {
     <FlexGrid>
       {data.map(item => (
         <PersonCard
-          key={item.person.id}
-          name={item.person.name}
-          country={item.person.country ? item.person.country.name : null}
-          birthday={item.person?.birthday}
-          deathday = {item.person?.deathday}
-          gender = { item.person?.gender }
-          image = {item.person.image ? item.person.image.medium : IMAGE_NOT_FOUND}
+          key={item.id}
+          name={item.name}
+          country={item.country ? item.country.name : null}
+          birthday={item?.birthday}
+          deathday = {item?.deathday}
+          gender = { item?.gender }
+          image = {item.image ? item.image.medium : IMAGE_NOT_FOUND}
         />
       ))}
     </FlexGrid>

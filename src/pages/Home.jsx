@@ -1,23 +1,32 @@
 import React, { useState } from 'react';
+import CustomRadio from '../components/CustomRadio';
 import MainPageLayout from '../components/MainPageLayout';
 import PersonGrid from '../components/person/PersonGrid';
 import ShowGrid from '../components/shows/ShowGrid';
 import { getApi } from '../misc/config';
 import { useLastQuery } from '../misc/custome-hook';
+import {
+  RadioInputsWrapper,
+  SearchButtonWrapper,
+  SearchInput,
+} from './Home.Styled';
 
 const Home = () => {
   const [search, setSearch] = useLastQuery();
   const [results, setResults] = useState([]);
   const [searchType, setSearchType] = useState('shows');
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
   const isShowSearch = searchType === 'shows';
 
   const handleSearch = () => {
-    const searchOption = searchType === 'shows' ? `/search/shows?q=/${search}` : `/search/people?q=/${search}`
+    const searchOption =
+      searchType === 'shows'
+        ? `/search/shows?q=/${search}`
+        : `/search/people?q=/${search}`;
     getApi(searchOption)
       .then(data => {
-        const showData = data.map(item => item.show)
-        setResults(showData)
+        const showData = data.map(item => item.show ? item.show : item.person );
+        setResults(showData);
       })
       .catch(err => setError(err.message));
   };
@@ -38,8 +47,8 @@ const Home = () => {
     if (isShowSearch && results.length > 0) {
       return <ShowGrid data={results} />;
     }
-    if (!isShowSearch && results.length > 0){
-      return <PersonGrid data={results} />
+    if (!isShowSearch && results.length > 0) {
+      return <PersonGrid data={results} />;
     }
 
     if (results === null) {
@@ -50,38 +59,39 @@ const Home = () => {
 
   return (
     <MainPageLayout>
-      <input
+      <SearchInput
         type="search"
         value={search}
         onChange={eve => onInputSearch(eve)}
         onKeyDown={eve => onEnter(eve)}
       />
-      <button type="button" onClick={handleSearch}>
-        Search
-      </button>
-
-      <div>
-        <label htmlFor="shows">
-          Shows
-          <input
-            type="radio"
-            id="shows"
+      <RadioInputsWrapper>
+        <div>
+          <CustomRadio
+            lable="Shows"
+            id="shows-search"
             value="shows"
             onChange={onTypeChange}
             checked={isShowSearch}
           />
-        </label>
-        <label htmlFor="people">
-          People
-          <input
-            type="radio"
-            id="people"
-            onChange={onTypeChange}
+        </div>
+        <div>
+          <CustomRadio
+            lable="Actors"
+            id="actors-search"
             value="people"
+            onChange={onTypeChange}
             checked={!isShowSearch}
           />
-        </label>
-      </div>
+        </div>
+      </RadioInputsWrapper>
+
+      <SearchButtonWrapper>
+        <button type="button" onClick={handleSearch}>
+          Search
+        </button>
+      </SearchButtonWrapper>
+
       {renderResult()}
     </MainPageLayout>
   );
