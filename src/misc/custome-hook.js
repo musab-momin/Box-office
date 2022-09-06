@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 
 function showReducer(preState, action){
@@ -29,4 +29,20 @@ function usePersistedReducer(reducer, initialState, key){
 
 export function useShows(key='shows'){
     return usePersistedReducer(showReducer, [], key)
+}
+
+
+export function useLastQuery(key='lastQuery'){
+    const [search, setSearch] = useState(()=>{
+        const showList =  sessionStorage.getItem(key)
+        return showList ? JSON.parse(showList) : ""
+    });
+
+    const setPersistanceSearch = (searchKey)=>{
+        setSearch(searchKey);
+        sessionStorage.setItem(key, JSON.stringify(searchKey))
+    }
+
+    return [search, setPersistanceSearch];
+
 }
