@@ -1,25 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import Saved from './pages/Saved';
+import Home from './pages/Home';
+import Show from './pages/Show';
+
 
 function App() {
+  const theme = {
+    mainColors: {
+      blue: '#2400ff',
+      gray: '#c6c6c6',
+      dark: '#353535',
+    },
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="/show/:id" element={<Show />} />
+        <Route exact path="/saved" element={<Saved />} />
+      </Routes>
+    </ThemeProvider>
   );
 }
 
